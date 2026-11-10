@@ -12,3 +12,4 @@ ADR 一旦接受就不改內容；若決策改變，新增一份 ADR 並將舊�
 | [0005](./0005-shared-data-layer.md) | 共享資料層：前後台共用 @mono/db | step-06 |
 | [0006](./0006-enforce-boundaries.md) | 以工具強制依賴邊界（套件 + 檔案層級） | step-07 |
 | [0007](./0007-testing-strategy.md) | 測試策略：套件層級測試 + --affected | step-08 |
+| [0008](./0008-ci-and-deployment.md) | CI 只跑受影響範圍；turbo prune 產生最小映像 | step-09 |

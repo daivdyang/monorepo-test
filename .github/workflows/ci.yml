@@ -1,0 +1,36 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # --affected 需要比對基準分支，淺層 clone 會找不到共同祖先
+          fetch-depth: 0
+
+      - uses: pnpm/action-setup@v4   # 版本讀取 package.json 的 packageManager
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      # 依賴邊界一律全量檢查（很快，且規則本身可能改變）
+      - run: pnpm turbo boundaries
+
+      # PR：只跑受影響的套件；push 到 main：全量執行
+      - name: lint / typecheck / test / build
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            pnpm turbo run lint typecheck test build --affected
+          else
+            pnpm turbo run lint typecheck test build
+          fi

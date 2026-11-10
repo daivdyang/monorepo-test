@@ -5,6 +5,46 @@
 
 <!-- next -->
 
+## [step-09] CI 與部署（GitHub Actions + `turbo prune` + Docker）
+
+### 動機
+讓前面建立的規則在每個 PR 自動執行，並且每個 app 能**獨立**建置成最小的部署映像。
+
+### 變更
+- 新增 `.github/workflows/ci.yml`：`fetch-depth: 0`、`turbo boundaries`、PR 用 `--affected`、main 全量
+- 新增 `Dockerfile`（`--build-arg APP=web|admin`）：prune → install → build → runner 四階段
+- 新增 `.dockerignore`
+- **修正隱性依賴**：`packages/ui` 新增 `prepare:nuxt` script；`turbo.json` 新增 `prepare:nuxt` 任務，
+  `build.dependsOn` 加上 `^prepare:nuxt`
+- 新增 [ADR 0008](./docs/adr/0008-ci-and-deployment.md)
+
+### 學到的設計觀念
+- **`turbo prune --docker`** 將 repo 切成 `json/`（只有 package.json + lockfile）與 `full/`（原始碼），
+  讓 Docker 的依賴安裝層只在依賴改變時才失效。
+- **隱性依賴要寫進任務圖**：本機能動是因為 postinstall 剛好產生了 `packages/ui/.nuxt/`；
+  在乾淨環境（`--ignore-scripts`）就壞了。修在任務圖，而不是部署腳本。
+- **環境差異**：非 root 使用者的 volume 權限、production 的 Secure cookie 需要 HTTPS。
+
+### 實測過程
+1. 第一次 `docker build --build-arg APP=admin` 失敗：
+   `Failed to load tsconfig '../../packages/ui/.nuxt/tsconfig.app.json': Tsconfig not found`
+2. 加入 `prepare:nuxt` 任務後建置成功；本機 `pnpm build` 第二次仍為 2 cached（prepare 本身不快取，約 0.4 秒）
+3. 兩個容器掛載同一個 volume：
+
+| 動作 | 結果 |
+|---|---|
+| 前台 `/api/products` | total 3 |
+| 後台（`NUXT_ADMIN_PASSWORD=s3cret`）登入並下架商品 1 | 成功，cookie 帶 `Secure` |
+| 前台 `/api/products/1` | 404，total 2 |
+
+### 如何驗證
+```bash
+docker build --build-arg APP=web   -t mono-web .
+docker build --build-arg APP=admin -t mono-admin .
+docker run -d -p 3000:3000 -v mono-data:/data mono-web
+docker run -d -p 3001:3000 -v mono-data:/data -e NUXT_ADMIN_PASSWORD=*** mono-admin
+```
+
 ## [step-08] 測試與 `--affected`（只測受影響的套件）
 
 ### 動機

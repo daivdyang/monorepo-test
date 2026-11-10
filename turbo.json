@@ -7,9 +7,13 @@
         "^transit"
       ]
     },
+    "prepare:nuxt": {
+      "cache": false
+    },
     "build": {
       "dependsOn": [
-        "^build"
+        "^build",
+        "^prepare:nuxt"
       ],
       "inputs": [
         "$TURBO_DEFAULT$",
