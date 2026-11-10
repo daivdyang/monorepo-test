@@ -6,13 +6,16 @@
     "node": ">=24.15.0"
   },
   "scripts": {
-    "dev": "pnpm --parallel -r dev",
-    "dev:web": "pnpm --filter @mono/web dev",
-    "dev:admin": "pnpm --filter @mono/admin dev",
-    "build": "pnpm -r build",
-    "typecheck": "pnpm -r typecheck"
+    "dev": "turbo run dev",
+    "dev:web": "turbo run dev --filter=@mono/web",
+    "dev:admin": "turbo run dev --filter=@mono/admin",
+    "build": "turbo run build",
+    "build:web": "turbo run build --filter=@mono/web...",
+    "build:admin": "turbo run build --filter=@mono/admin...",
+    "typecheck": "turbo run typecheck"
   },
   "devDependencies": {
+    "turbo": "catalog:",
     "typescript": "catalog:"
   }
 }

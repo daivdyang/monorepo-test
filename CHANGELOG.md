@@ -5,6 +5,39 @@
 
 <!-- next -->
 
+## [step-05] 導入 Turborepo（任務圖 + 快取）
+
+### 動機
+`pnpm -r build` 每次都完整重建；不知道任務先後順序，也不知道哪些可以跳過。
+
+### 變更
+- 新增 `turbo.json`：`build`、`typecheck`、`dev`、`transit` 四個任務
+- 根目錄 scripts 改為 `turbo run ...`；新增 `build:web` / `build:admin`（`--filter=@mono/web...`）
+- catalog 新增 `turbo`
+- 新增 [ADR 0004](./docs/adr/0004-turborepo-task-graph.md)
+
+### 學到的設計觀念
+- **`^build` vs `transit`**：任務需要依賴的「產出」就用 `^task`；只需要依賴的「原始碼」就用 `transit`。
+- **快取正確性比快取命中率重要**。實測發現 typecheck 若設為 `dependsOn: []`：
+  修改 core 後 web/admin 的 typecheck **仍命中快取**，型別錯誤被隱藏。改用 `transit` 後才正確失效。
+- `outputs` 只放真正的產物（`.output/**`），不放 `.nuxt/` 中間檔。
+- `env` 要列出 build 時讀取的環境變數（`NUXT_*`），`.env` 是放在各 app 目錄而非根目錄。
+
+### 動手實驗
+```bash
+pnpm build                   # 第一次：2 cached 0
+pnpm build                   # 第二次：FULL TURBO（7ms）
+echo "//" >> packages/core/src/format.ts
+pnpm build                   # web、admin 都 cache miss —— 因為都依賴 core
+npx turbo run build --graph  # 輸出任務圖（DOT 格式）
+```
+只改 `apps/admin` 時，只有 `@mono/admin:typecheck` 是 cache miss，其他三個都命中。
+
+### 如何驗證
+```bash
+pnpm install && pnpm typecheck && pnpm build && pnpm build   # 最後一次應為 FULL TURBO
+```
+
 ## [step-04] 抽出 `@mono/ui`（Nuxt Layer + 設計 token）
 
 ### 動機
