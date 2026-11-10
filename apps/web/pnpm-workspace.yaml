@@ -1,0 +1,3 @@
+# 單一專案也需要這份檔案來放 pnpm 設定：允許 esbuild 下載原生 binary
+allowBuilds:
+  esbuild: true

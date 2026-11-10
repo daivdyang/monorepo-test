@@ -1,0 +1,21 @@
+# Mono Test — Nuxt 4 Monorepo 設計教學
+
+一步步把「兩個各自為政的 Nuxt app」演進成「設計良好的 monorepo」。
+每個步驟都是一個 git tag，可以隨時切換觀察：
+
+```bash
+git tag -l 'step-*'          # 列出所有步驟
+git checkout step-01         # 切到某一步
+git diff step-01 step-02     # 看這一步改了什麼
+```
+
+每一步的動機、變更與學到的事，請看 [CHANGELOG.md](./CHANGELOG.md)。
+
+## 目前狀態：step-01
+
+前台 `apps/web`（3000）與後台 `apps/admin`（3001）放在同一個資料夾，但**彼此完全獨立**：
+
+```bash
+cd apps/web   && pnpm install && pnpm dev
+cd apps/admin && pnpm install && pnpm dev   # 預設密碼 admin123
+```
