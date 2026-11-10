@@ -3,20 +3,70 @@
   "ui": "tui",
   "tasks": {
     "transit": {
-      "dependsOn": ["^transit"]
+      "dependsOn": [
+        "^transit"
+      ]
     },
     "build": {
-      "dependsOn": ["^build"],
-      "inputs": ["$TURBO_DEFAULT$", ".env*"],
-      "env": ["NUXT_*"],
-      "outputs": [".output/**"]
+      "dependsOn": [
+        "^build"
+      ],
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        ".env*"
+      ],
+      "env": [
+        "NUXT_*"
+      ],
+      "outputs": [
+        ".output/**"
+      ]
     },
     "typecheck": {
-      "dependsOn": ["transit"]
+      "dependsOn": [
+        "transit"
+      ]
+    },
+    "lint": {
+      "dependsOn": [
+        "transit"
+      ]
     },
     "dev": {
       "cache": false,
       "persistent": true
+    }
+  },
+  "boundaries": {
+    "tags": {
+      "app": {
+        "dependents": {
+          "allow": []
+        }
+      },
+      "core": {
+        "dependencies": {
+          "allow": [
+            "config"
+          ]
+        }
+      },
+      "ui": {
+        "dependencies": {
+          "allow": [
+            "core",
+            "config"
+          ]
+        }
+      },
+      "server-only": {
+        "dependencies": {
+          "allow": [
+            "core",
+            "config"
+          ]
+        }
+      }
     }
   }
 }

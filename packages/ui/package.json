@@ -9,13 +9,16 @@
   },
   "scripts": {
     "postinstall": "nuxt prepare",
-    "typecheck": "nuxt typecheck"
+    "typecheck": "nuxt typecheck",
+    "lint": "eslint ."
   },
   "dependencies": {
     "@mono/core": "workspace:*"
   },
   "devDependencies": {
+    "@mono/eslint-config": "workspace:*",
     "@types/node": "catalog:",
+    "eslint": "catalog:",
     "nuxt": "catalog:",
     "typescript": "catalog:",
     "vue": "catalog:",

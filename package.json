@@ -12,7 +12,10 @@
     "build": "turbo run build",
     "build:web": "turbo run build --filter=@mono/web...",
     "build:admin": "turbo run build --filter=@mono/admin...",
-    "typecheck": "turbo run typecheck"
+    "typecheck": "turbo run typecheck",
+    "lint": "turbo run lint",
+    "boundaries": "turbo boundaries",
+    "check": "turbo boundaries && turbo run lint typecheck"
   },
   "devDependencies": {
     "turbo": "catalog:",

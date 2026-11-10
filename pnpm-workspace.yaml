@@ -13,6 +13,10 @@ catalog:
   typescript: ^6.0.3
   "@types/node": ^24.19.2
   turbo: ^2.11.10
+  # 必須與 nuxt 內部使用的 h3 同一個 major（nuxt 4.6 用 h3 1.x；npm latest 是 2.x）
+  h3: ^1.15.11
+  eslint: ^10.14.0
+  "@nuxt/eslint-config": ^1.17.0
 
 # pnpm 預設不執行依賴套件的 install script（防供應鏈攻擊），
 # 需要下載原生 binary 的套件要在這裡明確允許 —— 全 repo 只需設定一次

@@ -10,3 +10,4 @@ ADR 一旦接受就不改內容；若決策改變，新增一份 ADR 並將舊�
 | [0003](./0003-ui-nuxt-layer.md) | 以 Nuxt Layer 共用 UI，設計 token 支援主題 | step-04 |
 | [0004](./0004-turborepo-task-graph.md) | 以 Turborepo 編排任務，transit 節點保證快取正確 | step-05 |
 | [0005](./0005-shared-data-layer.md) | 共享資料層：前後台共用 @mono/db | step-06 |
+| [0006](./0006-enforce-boundaries.md) | 以工具強制依賴邊界（套件 + 檔案層級） | step-07 |

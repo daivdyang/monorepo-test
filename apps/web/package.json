@@ -8,7 +8,8 @@
     "build": "nuxt build",
     "preview": "nuxt preview --port 3000",
     "postinstall": "nuxt prepare",
-    "typecheck": "nuxt typecheck"
+    "typecheck": "nuxt typecheck",
+    "lint": "eslint ."
   },
   "dependencies": {
     "@mono/core": "workspace:*",
@@ -19,7 +20,9 @@
     "vue-router": "catalog:"
   },
   "devDependencies": {
+    "@mono/eslint-config": "workspace:*",
     "@types/node": "catalog:",
+    "eslint": "catalog:",
     "typescript": "catalog:",
     "vue-tsc": "catalog:"
   }

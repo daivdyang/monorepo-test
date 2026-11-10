@@ -5,6 +5,42 @@
 
 <!-- next -->
 
+## [step-07] 強制依賴邊界（turbo boundaries + ESLint）
+
+### 動機
+依賴方向（apps → ui → core、db 為 server-only）至今只寫在文件與註解裡。
+**沒有被工具強制的設計，終究會被打破。**
+
+### 變更
+- 每個套件新增 `turbo.json` 並標上 tag：`app`、`ui`、`core`、`server-only`、`config`
+- 根目錄 `turbo.json` 新增 `boundaries.tags` 規則（見 ADR 0006）與 `lint` 任務（`dependsOn: ["transit"]`）
+- 新增 `packages/eslint-config`（`@mono/eslint-config`）：
+  基於 `@nuxt/eslint-config/flat`，加上「`app/` 不可 import `@mono/db`、`node:*`」規則
+- web / admin / ui 新增 `eslint.config.js` 與 `lint` script
+- 根目錄新增 scripts：`lint`、`boundaries`、`check`（boundaries + lint + typecheck）
+- **修正**：`apps/admin` 補上 `h3` 依賴（catalog 釘在 `^1.15.11`，與 nuxt 內部一致）
+- 新增 [ADR 0006](./docs/adr/0006-enforce-boundaries.md)
+
+### 學到的設計觀念
+- **兩層邊界**：套件層級（誰可以依賴誰）+ 檔案層級（同一套件內的 client / server 區分）。
+- **Phantom dependency**：pnpm 已經比 npm 嚴格，但 Nuxt 會把 h3 等型別暴露出來，
+  直接 import 仍然能動 —— `turbo boundaries` 一導入就抓到了。
+- **補依賴時要對齊版本**：`pnpm add h3` 會裝到 2.x，與 nuxt 內部的 1.x 型別不相容。
+- **設定也是套件**：ESLint 規則放在 `@mono/eslint-config`，所有 Nuxt 套件共用。
+
+### 動手實驗（已實測）
+| 違規 | 被誰抓到 | 訊息 |
+|---|---|---|
+| `packages/ui` 依賴並 import `@mono/db` | turbo boundaries | `Package @mono/db found without any tag listed in allowlist for @mono/ui` |
+| `apps/web/app/pages/index.vue` import `@mono/db` | ESLint | `@mono/db 是 server-only，請在 server/ 內使用…` |
+| `apps/web/app/composables/*.ts` import `node:fs` | ESLint | `app/ 會在瀏覽器執行，不可使用 Node 內建模組。` |
+| `apps/web/server/utils/db.ts` import `@mono/db` | — | 合法，不報錯 |
+
+### 如何驗證
+```bash
+pnpm check     # boundaries: no issues found；lint + typecheck: 8/8 成功
+```
+
 ## [step-06] 共享資料層 `@mono/db`（解決前後台資料不同步）
 
 ### 動機
