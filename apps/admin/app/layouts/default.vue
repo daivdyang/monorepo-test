@@ -12,7 +12,7 @@ const { user, logout } = useAuth()
       </nav>
       <div class="user">
         <small>{{ user?.name }}（{{ user?.role }}）</small>
-        <BaseButton variant="ghost" @click="logout">登出</BaseButton>
+        <UiButton variant="ghost" @click="logout">登出</UiButton>
       </div>
     </aside>
     <main class="content">

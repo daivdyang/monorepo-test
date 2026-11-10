@@ -14,13 +14,9 @@ const { public: { siteName } } = useRuntimeConfig()
   </div>
 </template>
 
-<style>
-body { margin: 0; font-family: system-ui, -apple-system, 'Noto Sans TC', sans-serif; color: #1f2328; }
-</style>
-
 <style scoped>
-.header { display: flex; gap: 12px; align-items: center; padding: 12px 24px; border-bottom: 1px solid #e5e7eb; }
+.header { display: flex; gap: 12px; align-items: center; padding: 12px 24px; border-bottom: 1px solid var(--c-border); }
 .brand { font-weight: 700; font-size: 1.2rem; text-decoration: none; color: inherit; }
-.tag { font-size: .75rem; padding: 2px 8px; border-radius: 99px; background: #e6f6ef; color: #00a86b; }
+.tag { font-size: .75rem; padding: 2px 8px; border-radius: 99px; background: var(--c-primary-soft); color: var(--c-primary); }
 .main { max-width: 960px; margin: 0 auto; padding: 24px; }
 </style>

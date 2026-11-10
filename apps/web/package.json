@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@mono/core": "workspace:*",
+    "@mono/ui": "workspace:*",
     "nuxt": "catalog:",
     "vue": "catalog:",
     "vue-router": "catalog:"

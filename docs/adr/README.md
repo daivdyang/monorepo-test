@@ -7,3 +7,4 @@ ADR 一旦接受就不改內容；若決策改變，新增一份 ADR 並將舊�
 |---|---|---|
 | [0001](./0001-pnpm-workspace.md) | 使用 pnpm workspace + catalog 管理依賴 | step-02 |
 | [0002](./0002-core-package-jit.md) | 抽出 @mono/core，採 Just-in-Time 內部套件 | step-03 |
+| [0003](./0003-ui-nuxt-layer.md) | 以 Nuxt Layer 共用 UI，設計 token 支援主題 | step-04 |

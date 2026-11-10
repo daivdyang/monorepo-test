@@ -20,11 +20,11 @@ async function onSubmit() {
 </script>
 
 <template>
-  <BaseCard title="後台登入" style="width: 320px;">
+  <UiCard title="後台登入" style="width: 320px;">
     <form style="display: flex; flex-direction: column; gap: 12px;" @submit.prevent="onSubmit">
       <input v-model="password" type="password" placeholder="密碼（預設 admin123）" style="padding: 8px;">
-      <p v-if="errorMsg" style="color: #e5484d; margin: 0;">{{ errorMsg }}</p>
-      <BaseButton type="submit">登入</BaseButton>
+      <p v-if="errorMsg" style="color: var(--c-danger); margin: 0;">{{ errorMsg }}</p>
+      <UiButton type="submit">登入</UiButton>
     </form>
-  </BaseCard>
+  </UiCard>
 </template>

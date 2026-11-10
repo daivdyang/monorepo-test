@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { formatPrice, type ApiResponse, type Product } from '@mono/core'
+import type { ApiResponse, Product } from '@mono/core'
 
 const { data, refresh } = await useFetch<ApiResponse<Product[]>>('/api/products')
 
@@ -23,13 +23,13 @@ async function togglePublished(p: Product) {
         <tr v-for="p in data?.data" :key="p.id">
           <td>{{ p.id }}</td>
           <td>{{ p.name }}</td>
-          <td>{{ formatPrice(p.price) }}</td>
+          <td><UiPrice :value="p.price" /></td>
           <td>{{ p.stock }}</td>
           <td>{{ p.published ? '已上架' : '未上架' }}</td>
           <td>
-            <BaseButton :variant="p.published ? 'danger' : 'primary'" @click="togglePublished(p)">
+            <UiButton :variant="p.published ? 'danger' : 'primary'" @click="togglePublished(p)">
               {{ p.published ? '下架' : '上架' }}
-            </BaseButton>
+            </UiButton>
           </td>
         </tr>
       </tbody>

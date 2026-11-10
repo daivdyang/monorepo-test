@@ -1,6 +1,8 @@
 export default defineNuxtConfig({
   compatibilityDate: '2026-11-01',
+  extends: ['@mono/ui'],
   devtools: { enabled: true },
+  css: ['~/assets/theme.css'], // 在 layer 的 tokens.css 之後載入，覆寫主色
   app: {
     head: {
       title: 'Mono Admin',

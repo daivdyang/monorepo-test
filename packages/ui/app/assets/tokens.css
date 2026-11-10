@@ -1,0 +1,23 @@
+/*
+ * 設計 token：元件只引用變數，不寫死顏色。
+ * 各 app 可在自己的 CSS 覆寫變數來換主題，而不必複製元件（見 apps/admin/app/assets/theme.css）。
+ */
+:root {
+  --c-primary: #00a86b;
+  --c-primary-soft: #e6f6ef;
+  --c-danger: #e5484d;
+  --c-fg: #1f2328;
+  --c-muted: #6b7280;
+  --c-border: #e5e7eb;
+  --c-surface: #ffffff;
+  --radius: 8px;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, 'Noto Sans TC', sans-serif;
+  color: var(--c-fg);
+}
+
+table { border-collapse: collapse; width: 100%; }
+th, td { padding: 8px 12px; border-bottom: 1px solid var(--c-border); text-align: left; }

@@ -1,0 +1,5 @@
+/* 後台主題：只覆寫 token，元件本身與前台共用同一份 */
+:root {
+  --c-primary: #2563eb;
+  --c-primary-soft: #dbeafe;
+}

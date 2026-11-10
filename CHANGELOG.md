@@ -5,6 +5,35 @@
 
 <!-- next -->
 
+## [step-04] 抽出 `@mono/ui`（Nuxt Layer + 設計 token）
+
+### 動機
+解決痛點 #4：`BaseButton` / `BaseCard` 兩份實作，前台綠、後台藍，細節持續分歧。
+但後台確實需要不同主色 —— 關鍵在於**差異應該發生在哪一層**。
+
+### 變更
+- 新增 `packages/ui`（`@mono/ui`），是一個 Nuxt Layer：
+  - `app/components/`：`Button`、`Card`、`Price`（以 `Ui` 前綴註冊 → `<UiButton>`…）
+  - `app/assets/tokens.css`：設計 token（`--c-primary` 等）與全域基礎樣式
+  - `<UiPrice>` 內部使用 `@mono/core` 的 `formatPrice`（ui → core）
+- 前後台 `nuxt.config.ts` 加上 `extends: ['@mono/ui']`
+- 移除：`apps/*/app/components/Base*.vue`、各 app 重複的 body / table 全域樣式
+- 新增 `apps/admin/app/assets/theme.css`：只覆寫 `--c-primary`，後台變藍色
+- 新增 [ADR 0003](./docs/adr/0003-ui-nuxt-layer.md)
+
+### 學到的設計觀念
+- **共用「機制」，允許「設定」不同**：元件只有一份，主題差異透過 token 覆寫。
+- **Layer vs 元件庫 vs Module**：Layer 是 Nuxt 專案間共用的最低成本方案（見 ADR 0003）。
+- **依賴方向開始成形**：`apps → ui → core`，箭頭只能往下。
+- Layer 中的路徑必須是絕對路徑，否則會以使用端 app 為基準解析。
+
+### 如何驗證
+```bash
+pnpm install && pnpm typecheck && pnpm build
+```
+- 前台 HTML 中可看到 `ui-card`、`ui-price` 元件輸出
+- 後台 CSS 先載入 layer 的 `--c-primary:#00a86b`，再被 theme.css 覆寫為 `#2563eb`
+
 ## [step-03] 抽出 `@mono/core`（領域型別 + 業務規則）
 
 ### 動機
