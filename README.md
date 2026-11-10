@@ -172,6 +172,7 @@ PR           ─▶ CI: boundaries → lint/typecheck/test/build --affected
 - 新的共用版本放進 catalog，子專案寫 `"catalog:"`。
 - **補依賴時版本要與框架內部一致**：例如 `h3` 必須是 nuxt 使用的 1.x，npm latest 是 2.x（step-07）。
 - 需要原生 binary 的新依賴要加入 `allowBuilds`，否則 `ERR_PNPM_IGNORED_BUILDS`。
+- 安裝狀態異常或切換 tag 後，可用 `pnpm clean:modules && pnpm install` 重來；pnpm 的全域 store 不受影響，重裝很快。
 
 ### Turborepo
 - 新任務要想清楚：需要依賴的「產出」用 `^task`；只需要「原始碼」用 `transit`。
@@ -201,6 +202,7 @@ PR           ─▶ CI: boundaries → lint/typecheck/test/build --affected
 | `pnpm build` / `build:web` / `build:admin` | 建置（`--filter=@mono/xxx...` 含依賴） |
 | `pnpm check` | boundaries + lint + typecheck + test |
 | `pnpm check:affected` | 同上，但只跑受影響的套件，並加上 build |
+| `pnpm clean:modules` | 刪除根目錄與所有 workspace 成員的 `node_modules`（不碰 `.output`），之後 `pnpm install` 重裝 |
 | `npx turbo run build --graph` | 輸出任務圖 |
 | `npx turbo run test --affected --dry` | 預覽哪些任務會被執行 |
 | `npx turbo prune @mono/admin --docker` | 取出 admin 需要的子集合 |

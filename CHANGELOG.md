@@ -5,6 +5,26 @@
 
 <!-- next -->
 
+## [未標記] 新增 `pnpm clean:modules`：刪除所有 node_modules
+
+### 動機
+monorepo 的 node_modules 分散在根目錄與每個 workspace 成員裡。切換 tag、升級 catalog 版本或遇到奇怪的安裝狀態時，需要一次全部清掉重裝。
+
+### 變更
+- 新增 `scripts/clean-modules.mjs`，並在根 `package.json` 加入 `clean:modules`
+
+### 學到的設計觀念
+- **成員清單只有一個來源**：腳本直接讀 `pnpm-workspace.yaml` 的 `packages`，新增 workspace 目錄時不用同步修改。
+- **只用 Node 內建模組**：腳本要刪的正是依賴所在的 node_modules，所以它自己不能依賴任何套件；用 Node 而不是 `rm -rf` 也能跨平台。
+- **清除範圍要精準**：`apps/*/.output/server/node_modules` 是 build 產物的一部分，不在清除範圍內，刪掉會讓已建置的伺服器無法啟動。
+
+### 如何驗證
+```bash
+pnpm clean:modules                              # 列出刪除的 7 個目錄
+find . -name node_modules -type d -prune        # 只剩 .output 裡的
+pnpm install && pnpm check
+```
+
 ## [step-10] 文件：架構總覽、對話紀錄
 
 ### 變更

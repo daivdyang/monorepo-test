@@ -160,4 +160,61 @@
 
 ### 助理回覆
 
-> 摘要見 [CHANGELOG.md](../CHANGELOG.md) 的 step-01 ~ step-10；最終架構見 [README.md](../README.md)。
+> 歷史已經重寫完成。新的 `main` 從「兩個互相複製程式碼的 app」開始，共 10 個步驟，每步一個 commit，commit 訊息裡寫了說明，並打上 `step-01` 到 `step-10` 的 tag。每一步都實際驗證過；最後從乾淨 clone 重跑，`main`、`step-03`、`step-06` 都能安裝和 build。
+>
+> **教學步驟**
+>
+> | Tag | 主題 | 解決的痛點 |
+> |---|---|---|
+> | step-01 | 兩個獨立 app | 刻意重複：型別寫兩份、價格格式和按鈕顏色已不一致、資料不同步 |
+> | step-02 | pnpm workspace + catalog | 兩份 lockfile、版本各自漂移 |
+> | step-03 | `@mono/core`（型別 + 業務規則） | 型別重複、`formatPrice` 不一致 |
+> | step-04 | `@mono/ui`（Nuxt Layer） | 元件重複；後台改色只需覆寫 4 行 CSS 變數 |
+> | step-05 | Turborepo 任務圖 | 每次都全部重建 |
+> | step-06 | `@mono/db`（SQLite） | 前後台資料不同步 |
+> | step-07 | 用工具強制依賴邊界 | 套件依賴規則只靠自律 |
+> | step-08 | Vitest + `--affected` | 改共用套件後的回歸風險 |
+> | step-09 | CI + Docker（`turbo prune`） | CI 每次全量跑、映像太大 |
+> | step-10 | README、對話紀錄 | — |
+>
+> **文件**
+>
+> - `CHANGELOG.md`：每一步依「動機 → 變更 → 設計觀念 → 實測結果」記錄。
+> - `docs/adr/0001` 到 `0008`：每個設計決策考慮過的選項和代價。
+> - `docs/conversation.md`：完整的對話紀錄。
+>
+> **實測中發現、已寫進教材的問題**
+>
+> 1. step-05：typecheck 如果設成 `dependsOn: []`，改了 core 之後，web 和 admin 的 typecheck 還是會拿舊的快取結果，型別錯誤就被藏起來了。改用 `transit` 後才會正確重跑。
+> 2. step-07：`turbo boundaries` 一啟用就抓到 admin 用了 `h3` 卻沒在 `package.json` 宣告。補宣告時發現 npm 最新版是 2.x，但 Nuxt 內部用 1.x，版本必須對齊。
+> 3. step-09：Docker build 失敗。共用的 UI 套件需要先產生 `.nuxt/`，這原本靠安裝時的 postinstall 自動完成，所以本機從來沒出錯。修正方式是把這個依賴寫進 turbo 任務圖，而不是在 Dockerfile 裡打補丁。
+> 4. step-09：容器用非 root 執行時無法寫入 volume；另外 production 的登入 cookie 帶 `Secure`，正式環境必須走 HTTPS。
+>
+> 前一版教學裡的兩個錯誤也一起修正了：`globalDependencies: [".env"]`，以及把 `.nuxt/**` 放進快取的 outputs。
+>
+> **其他**
+>
+> - 舊的歷史保留在本機分支 `archive/first-draft`，沒有刪除。確定不需要的話可以執行 `git branch -D archive/first-draft`。
+> - 測試用的 Docker image 已經刪除。
+> - 本機 3001 埠還是被另一個專案佔用，所以這次的測試都在 4000/4001 上進行。
+>
+> 可以用 `git checkout step-01` 從頭看起，或用 `git diff step-05 step-06` 看單一步驟的改動。
+
+---
+
+## 第 5 輪
+
+### 使用者
+
+> 請加一個命令可以刪除所有的node_modules
+
+### 過程
+
+- 新增 `scripts/clean-modules.mjs` 與根目錄指令 `pnpm clean:modules`。
+- 設計考量：用 Node 內建模組（跨平台、刪掉 node_modules 後仍能執行）；成員清單讀 `pnpm-workspace.yaml`；不刪 `apps/*/.output/server/node_modules`（build 產物）。
+- 實測：刪除 7 個目錄，只剩 `.output` 內的；再跑一次顯示「沒有可刪除的 node_modules」；`pnpm install --frozen-lockfile` 與 `pnpm check` 通過。
+- 更新 CHANGELOG（未標記 tag 的維護項目）與 README 指令表、注意事項。
+
+### 助理回覆
+
+> 新增了 `pnpm clean:modules`，會刪除根目錄與 `apps/*`、`packages/*` 底下的 `node_modules`，之後執行 `pnpm install` 重裝即可。詳見 CHANGELOG 最上方一節。

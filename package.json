@@ -17,7 +17,8 @@
     "boundaries": "turbo boundaries",
     "check": "turbo boundaries && turbo run lint typecheck test",
     "test": "turbo run test",
-    "check:affected": "turbo boundaries && turbo run lint typecheck test build --affected"
+    "check:affected": "turbo boundaries && turbo run lint typecheck test build --affected",
+    "clean:modules": "node scripts/clean-modules.mjs"
   },
   "devDependencies": {
     "turbo": "catalog:",
