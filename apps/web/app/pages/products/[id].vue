@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import type { Product } from '#shared/types/product'
-import { formatPrice } from '#shared/utils/format'
+import { formatPrice, isSoldOut, type Product } from '@mono/core'
 
 const route = useRoute()
 const { data: product, error } = await useFetch<Product>(`/api/products/${route.params.id}`)
@@ -17,6 +16,6 @@ useSeoMeta({ title: () => product.value?.name ?? '商品' })
     <NuxtLink to="/">← 回列表</NuxtLink>
     <h1>{{ product.name }}</h1>
     <p>售價：{{ formatPrice(product.price) }}</p>
-    <BaseButton :disabled="!product.stock">{{ product.stock ? '加入購物車' : '已售完' }}</BaseButton>
+    <BaseButton :disabled="isSoldOut(product)">{{ isSoldOut(product) ? '已售完' : '加入購物車' }}</BaseButton>
   </div>
 </template>

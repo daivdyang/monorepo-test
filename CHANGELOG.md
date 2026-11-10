@@ -5,6 +5,40 @@
 
 <!-- next -->
 
+## [step-03] 抽出 `@mono/core`（領域型別 + 業務規則）
+
+### 動機
+解決痛點 #2、#3：`Product` 型別寫兩次、`formatPrice` 已分歧、業務規則散落在各 handler。
+
+### 變更
+- 新增 `packages/tsconfig`（`@mono/tsconfig`）：非 Nuxt 套件共用的 TS 設定
+- 新增 `packages/core`（`@mono/core`）：
+  - `Product`、`ApiResponse<T>` 型別
+  - 業務規則 `isOnStorefront()`、`isSoldOut()`、`storefrontProducts()`
+  - 統一的 `formatPrice()`（採用前台的 Intl 版本）
+- 前後台改為 `import ... from '@mono/core'`；handler 與頁面改用業務規則函式
+- 移除：`apps/*/shared/types/product.ts`、`apps/*/shared/utils/format.ts`
+- **保留**：`apps/admin/shared/types/user.ts`（只有後台用，不該搬）、各 app 的假資料（留待 step-06）
+- 新增 [ADR 0002](./docs/adr/0002-core-package-jit.md)
+
+### 學到的設計觀念
+- **抽出的判斷標準**：兩個以上 app 使用 + 與框架無關。只有一個使用者的東西留在原地。
+- **Just-in-Time 套件**：`exports` 直接指向 `.ts`，不需 build；Vite/Nitro 會轉譯 workspace 套件。
+- **業務規則是最該共用的東西**，比 UI 元件更重要 —— 規則不一致會造成資料錯誤，UI 不一致只是難看。
+
+### 動手實驗
+在 `packages/core/src/product.ts` 的 `Product` 加上 `sku: string`，執行 `pnpm typecheck`：
+```
+apps/web   typecheck: server/data/products.ts(5,3): error TS2741: Property 'sku' is missing ...
+apps/admin typecheck: server/data/products.ts(5,3): error TS2741: Property 'sku' is missing ...
+```
+**一次修改、兩邊同時被型別系統抓到** —— 這是 step-01 做不到的。
+
+### 如何驗證
+```bash
+pnpm install && pnpm typecheck && pnpm build
+```
+
 ## [step-02] 導入 pnpm workspace
 
 ### 動機

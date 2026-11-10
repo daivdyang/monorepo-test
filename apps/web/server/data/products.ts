@@ -1,4 +1,4 @@
-import type { Product } from '#shared/types/product'
+import type { Product } from '@mono/core'
 
 // 每個 app 各自一份 in-memory 假資料：兩個行程的資料彼此看不到
 export const products: Product[] = [

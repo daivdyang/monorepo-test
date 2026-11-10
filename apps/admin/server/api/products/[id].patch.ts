@@ -1,4 +1,4 @@
-import type { Product } from '#shared/types/product'
+import type { Product } from '@mono/core'
 import { products } from '../../data/products'
 
 export default defineEventHandler(async (event) => {

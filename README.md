@@ -11,7 +11,7 @@ git diff step-01 step-02     # 看這一步改了什麼
 
 每一步的動機、變更與學到的事，請看 [CHANGELOG.md](./CHANGELOG.md)。
 
-## 目前狀態：step-02
+## 目前狀態：step-03
 
 前台 `apps/web`（3000）與後台 `apps/admin`（3001）已納入 pnpm workspace，從根目錄統一操作：
 
@@ -20,3 +20,5 @@ pnpm install
 pnpm dev          # 同時啟動前後台（後台預設密碼 admin123）
 pnpm dev:web      # 只啟動前台
 ```
+
+共用程式碼：`packages/core`（型別、業務規則、formatPrice）、`packages/tsconfig`。

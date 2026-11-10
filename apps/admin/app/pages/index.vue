@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { ApiResponse, Product } from '#shared/types/product'
+import { isOnStorefront, isSoldOut, type ApiResponse, type Product } from '@mono/core'
 
 const { data } = await useFetch<ApiResponse<Product[]>>('/api/products')
 
@@ -7,8 +7,8 @@ const stats = computed(() => {
   const list = data.value?.data ?? []
   return {
     total: list.length,
-    published: list.filter(p => p.published).length,
-    soldOut: list.filter(p => p.stock === 0).length,
+    published: list.filter(isOnStorefront).length,
+    soldOut: list.filter(isSoldOut).length,
   }
 })
 </script>

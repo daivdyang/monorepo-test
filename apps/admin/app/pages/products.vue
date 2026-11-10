@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import type { ApiResponse, Product } from '#shared/types/product'
-import { formatPrice } from '#shared/utils/format'
+import { formatPrice, type ApiResponse, type Product } from '@mono/core'
 
 const { data, refresh } = await useFetch<ApiResponse<Product[]>>('/api/products')
 

@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import type { ApiResponse, Product } from '#shared/types/product'
-import { formatPrice } from '#shared/utils/format'
+import { formatPrice, isSoldOut, type ApiResponse, type Product } from '@mono/core'
 
 // SSR 時直接呼叫 server handler（不走網路），結果隨 HTML payload 送到瀏覽器
 const { data } = await useFetch<ApiResponse<Product[]>>('/api/products')
@@ -12,8 +11,8 @@ const { data } = await useFetch<ApiResponse<Product[]>>('/api/products')
     <div class="grid">
       <BaseCard v-for="p in data?.data" :key="p.id" :title="p.name">
         <p>{{ formatPrice(p.price) }}</p>
-        <p :style="{ color: p.stock ? '#6b7280' : '#e5484d' }">
-          {{ p.stock ? `庫存 ${p.stock}` : '已售完' }}
+        <p :style="{ color: isSoldOut(p) ? '#e5484d' : '#6b7280' }">
+          {{ isSoldOut(p) ? '已售完' : `庫存 ${p.stock}` }}
         </p>
         <NuxtLink :to="`/products/${p.id}`">
           <BaseButton variant="ghost">查看</BaseButton>

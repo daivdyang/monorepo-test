@@ -1,4 +1,4 @@
-import type { ApiResponse, Product } from '#shared/types/product'
+import type { ApiResponse, Product } from '@mono/core'
 import { products } from '../../data/products'
 
 // 後台看得到全部商品（含未上架），但必須登入
