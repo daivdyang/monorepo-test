@@ -5,6 +5,43 @@
 
 <!-- next -->
 
+## [step-08] 測試與 `--affected`（只測受影響的套件）
+
+### 動機
+共用套件的修改會影響多個 app。需要 (1) 用測試鎖住規則，(2) 只跑受影響的部分，讓 CI 時間不隨 repo 長大而爆炸。
+
+### 變更
+- catalog 新增 `vitest`
+- `packages/core`：`product.test.ts`（業務規則）、`format.test.ts`（鎖住統一後的價格格式）
+- `packages/db`：`products.test.ts`（`:memory:` SQLite；含「db + core 規則」的跨套件整合測試）
+- `turbo.json` 新增 `test` 任務（`dependsOn: ["transit"]`）
+- 根目錄 scripts：`test`；`check` 加入 test；新增 `check:affected`
+- 新增 [ADR 0007](./docs/adr/0007-testing-strategy.md)
+
+### 學到的設計觀念
+- **測試放在最靠近規則的地方**：規則在 core，就在 core 測；不必啟動 Nuxt 就能驗證業務邏輯 ——
+  這是 step-03「core 必須與框架無關」的另一個回報。
+- **`--affected` = git diff × 依賴圖**：只改 db 時，core 不需要重測；只改 admin 時，web 完全不動。
+- **turbo 看不到依賴圖之外的耦合**（例如共用 DB 檔）—— 這類風險要靠 db 套件的測試把關。
+
+### 動手實驗（已實測，基於乾淨的 HEAD）
+```bash
+echo "//" >> packages/db/src/seed.ts
+npx turbo run lint typecheck test build --affected --dry
+```
+| 修改位置 | 被選到的任務 |
+|---|---|
+| `packages/db` | db#test、db#typecheck、web/admin 的 build、lint、typecheck（core 不在內） |
+| `apps/admin` | admin#build、admin#lint、admin#typecheck |
+| `packages/ui` | ui#lint、ui#typecheck、web/admin 的 build、lint、typecheck |
+| 無變更 | （無） |
+
+### 如何驗證
+```bash
+pnpm test      # core 4 tests、db 5 tests 全部通過
+pnpm check     # boundaries + lint + typecheck + test：10/10
+```
+
 ## [step-07] 強制依賴邊界（turbo boundaries + ESLint）
 
 ### 動機

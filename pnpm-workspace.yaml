@@ -17,6 +17,7 @@ catalog:
   h3: ^1.15.11
   eslint: ^10.14.0
   "@nuxt/eslint-config": ^1.17.0
+  vitest: ^5.1.0
 
 # pnpm 預設不執行依賴套件的 install script（防供應鏈攻擊），
 # 需要下載原生 binary 的套件要在這裡明確允許 —— 全 repo 只需設定一次
