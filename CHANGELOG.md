@@ -5,6 +5,22 @@
 
 <!-- next -->
 
+## [step-10] 文件：架構總覽、對話紀錄
+
+### 變更
+- 改寫 `README.md`：學習路徑總表、最終架構與依賴分層、任務圖、執行流程、8 條設計原則、注意事項、常用指令
+- 新增 `docs/conversation.md`：建立本專案的完整對話紀錄（含中途修正需求與重寫歷史的決定）
+- 新增 `.env.example`：`NUXT_ADMIN_PASSWORD`、`NUXT_DB_PATH`、`NUXT_PUBLIC_SITE_NAME`
+
+### 學到的設計觀念
+- **文件分層**：README 給「現在長怎樣」、CHANGELOG 給「怎麼演進來的」、ADR 給「為什麼這樣選」。
+- **對話與決策過程也是知識**：哪些需求被修正、哪些問題是實測才發現的，往往比最終程式碼更有教學價值。
+
+### 如何驗證
+```bash
+pnpm install && pnpm check && pnpm build
+```
+
 ## [step-09] CI 與部署（GitHub Actions + `turbo prune` + Docker）
 
 ### 動機
