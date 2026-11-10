@@ -11,7 +11,7 @@ git diff step-01 step-02     # 看這一步改了什麼
 
 每一步的動機、變更與學到的事，請看 [CHANGELOG.md](./CHANGELOG.md)。
 
-## 目前狀態：step-05
+## 目前狀態：step-06
 
 前台 `apps/web`（3000）與後台 `apps/admin`（3001）已納入 pnpm workspace，從根目錄統一操作：
 
@@ -23,4 +23,6 @@ pnpm build        # Turborepo 建置（有快取）
 pnpm typecheck
 ```
 
-共用程式碼：`packages/core`（型別、業務規則）、`packages/ui`（Nuxt Layer：元件與設計 token）、`packages/tsconfig`。
+共用程式碼：`packages/core`（型別、業務規則）、`packages/ui`（Nuxt Layer：元件與設計 token）、`packages/db`（SQLite 資料層，server-only）、`packages/tsconfig`。
+
+前後台共用 `.data/mono.db`（首次啟動自動建立並寫入初始資料，刪除即可重置）。

@@ -5,6 +5,46 @@
 
 <!-- next -->
 
+## [step-06] 共享資料層 `@mono/db`（解決前後台資料不同步）
+
+### 動機
+解決痛點 #6：後台下架商品，前台完全不知道。原因是兩個 Nitro 行程各自一份記憶體 ——
+這是架構問題：**資料的唯一來源在哪裡？**（三種方案比較見 ADR 0005）
+
+### 變更
+- 新增 `packages/db`（`@mono/db`），使用 Node 24 內建 `node:sqlite`：
+  - `client.ts`：`createDb()` / `getDb()`，啟用 WAL 與 busy_timeout（兩個行程同時存取）
+  - `schema.ts`、`seed.ts`：建表與初始資料（取代各 app 的假資料）
+  - `products.ts`：`createProductRepo()` —— 只負責存取，不負責規則
+- 前後台：
+  - `runtimeConfig.dbPath` 指向 repo 根目錄 `.data/mono.db`（可用 `NUXT_DB_PATH` 覆寫）
+  - `server/utils/db.ts`：`useProductRepo()`（Nitro 自動 import）
+  - `nitro.rollupConfig.external: ['node:sqlite']`：消除 Nitro 無法解析內建模組的警告
+- 後台 PATCH 改為白名單欄位（`name` 等其他欄位會被忽略）
+- 移除：`apps/*/server/data/products.ts`
+- 新增 [ADR 0005](./docs/adr/0005-shared-data-layer.md)
+
+### 學到的設計觀念
+- **規則（core）與存取（db）分離**：前台的組合方式是 `storefrontProducts(repo.list())`；
+  不在 SQL 寫 `WHERE published = 1`，避免同一條規則存在兩處。
+- **Server-only 套件**：`@mono/db` 只能在 `server/` 使用，這條邊界目前只靠自律 → step-07 用工具強制。
+- **部署與設定相關**：`dbPath` 的預設值在 build 時被寫成絕對路徑，正式環境必須用環境變數指定。
+
+### 如何驗證（已實測）
+```bash
+pnpm build
+PORT=4000 node apps/web/.output/server/index.mjs &
+PORT=4001 node apps/admin/.output/server/index.mjs &
+```
+| 動作 | 結果 |
+|---|---|
+| 前台 `GET /api/products` | total 3 |
+| 後台登入後 `PATCH /api/products/1 {published:false}` | 成功 |
+| 前台 `GET /api/products/1` | **404**（step-05 以前是 200） |
+| 前台 `GET /api/products` | total 2 |
+| 後台 `PATCH {name:"hacked"}` | 被忽略 |
+| 未登入 `PATCH` | 401 |
+
 ## [step-05] 導入 Turborepo（任務圖 + 快取）
 
 ### 動機

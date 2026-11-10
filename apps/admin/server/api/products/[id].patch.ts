@@ -1,19 +1,20 @@
-import type { Product } from '@mono/core'
-import { products } from '../../data/products'
+import type { ProductPatch } from '@mono/db'
 
 export default defineEventHandler(async (event) => {
   requireAdmin(event)
 
   const id = Number(getRouterParam(event, 'id'))
-  const product = products.find(p => p.id === id)
+  const body = await readBody<Record<string, unknown>>(event)
+
+  // 只接受白名單欄位，且型別正確
+  const patch: ProductPatch = {}
+  if (typeof body.published === 'boolean') patch.published = body.published
+  if (typeof body.stock === 'number') patch.stock = body.stock
+  if (typeof body.price === 'number') patch.price = body.price
+
+  const product = useProductRepo().update(id, patch)
   if (!product) {
     throw createError({ statusCode: 404, statusMessage: 'Product not found' })
   }
-
-  const body = await readBody<Partial<Pick<Product, 'published' | 'stock' | 'price'>>>(event)
-  if (typeof body.published === 'boolean') product.published = body.published
-  if (typeof body.stock === 'number') product.stock = body.stock
-  if (typeof body.price === 'number') product.price = body.price
-
   return product
 })
