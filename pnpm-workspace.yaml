@@ -1,0 +1,19 @@
+# 哪些資料夾是 workspace 成員
+packages:
+  - apps/*
+  - packages/*
+
+# Catalog：整個 repo 共用的依賴版本（Single Version Policy）
+# 子專案寫 "nuxt": "catalog:"，升級只改這裡一處
+catalog:
+  nuxt: ^4.6.4
+  vue: ^3.5.45
+  vue-router: ^5.4.0
+  vue-tsc: ^3.3.14
+  typescript: ^6.0.3
+  "@types/node": ^24.19.2
+
+# pnpm 預設不執行依賴套件的 install script（防供應鏈攻擊），
+# 需要下載原生 binary 的套件要在這裡明確允許 —— 全 repo 只需設定一次
+allowBuilds:
+  esbuild: true

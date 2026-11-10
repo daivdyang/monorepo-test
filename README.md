@@ -11,11 +11,12 @@ git diff step-01 step-02     # 看這一步改了什麼
 
 每一步的動機、變更與學到的事，請看 [CHANGELOG.md](./CHANGELOG.md)。
 
-## 目前狀態：step-01
+## 目前狀態：step-02
 
-前台 `apps/web`（3000）與後台 `apps/admin`（3001）放在同一個資料夾，但**彼此完全獨立**：
+前台 `apps/web`（3000）與後台 `apps/admin`（3001）已納入 pnpm workspace，從根目錄統一操作：
 
 ```bash
-cd apps/web   && pnpm install && pnpm dev
-cd apps/admin && pnpm install && pnpm dev   # 預設密碼 admin123
+pnpm install
+pnpm dev          # 同時啟動前後台（後台預設密碼 admin123）
+pnpm dev:web      # 只啟動前台
 ```

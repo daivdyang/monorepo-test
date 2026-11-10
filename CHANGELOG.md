@@ -5,6 +5,33 @@
 
 <!-- next -->
 
+## [step-02] 導入 pnpm workspace
+
+### 動機
+解決痛點 #1、#5：兩份 lockfile、版本可能漂移、每個指令都要分別 `cd` 進去執行。
+
+### 變更
+- 新增根目錄 `package.json`：`packageManager` 鎖定 pnpm 版本；scripts 用 `pnpm -r` / `--filter` 統一操作
+- 新增根目錄 `pnpm-workspace.yaml`：宣告 `apps/*`、`packages/*`；**catalog** 統一版本；`allowBuilds` 集中設定
+- 子專案依賴全部改為 `"catalog:"`；套件名改為 scope 形式 `@mono/web`、`@mono/admin`
+- 移除：`apps/*/pnpm-lock.yaml`、`apps/*/pnpm-workspace.yaml`（合併成根目錄一份）
+- 新增 [ADR 0001](./docs/adr/0001-pnpm-workspace.md)
+
+### 學到的設計觀念
+- **Single Version Policy**：同一個 repo 內同一依賴只有一個版本，避免「前台 Nuxt 4.6、後台 Nuxt 4.2」的漂移。
+- **Scope 命名**（`@mono/*`）：一眼區分內部套件與第三方套件，也方便 `--filter '@mono/*'`。
+- `pnpm -r` 只是「在每個套件裡跑同一個指令」，**沒有快取、也不懂任務之間的依賴** —— 這是 step-05 要解決的。
+
+### 仍存在的痛點
+程式碼仍然重複（#2、#3、#4）、資料仍不共享（#6）、每次 build 都從頭來。
+
+### 如何驗證
+```bash
+pnpm install       # 根目錄一次安裝全部
+pnpm typecheck     # = pnpm -r typecheck
+pnpm build         # 每次都完整重建兩個 app（注意花費時間，step-05 會對比）
+```
+
 ## [step-01] 兩個各自獨立的 Nuxt app（刻意重複）
 
 ### 動機
